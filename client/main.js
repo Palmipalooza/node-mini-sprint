@@ -11,14 +11,35 @@ $(document).ready(function() {
   });
 
   function getQuote(){
-
-    //YOUR CODE HERE, Add a GET request
+    $.ajax({
+      url: 'http://localhost:3000/quote',
+      type: 'GET'
+    })
+    .done(function(response){
+      console.log(response);
+      document.querySelector('#quote').innerHTML = response;
+    })
+    .fail(function(err){
+      console.log('fail')
+    })
+    
 
   }
 
   function addQuote(quote){
-    
-    //YOUR CODE HERE, Add a POST request
+    let data = {quote: quote};
+    $.ajax({
+      url: 'http://localhost:3000/quote',
+      type: 'POST',
+      data: JSON.stringify(data),
+      contentType: 'application/json'
+    })
+    .done(function(response){
+      console.log(response);
+    })
+    .fail(function(err){
+      console.log('fail')
+    })
 
   }
 });

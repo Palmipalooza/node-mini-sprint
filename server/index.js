@@ -28,7 +28,16 @@ function getRandomInt(min, max) {
 
 const handleRequest = function(req, res) {
   console.log(`Endpoint: ${req.url} Method: ${req.method}`);
-
+  //loop through headers obj
+    //use res.setHeader(key, value)
+  for (let key in headers) {
+    res.setHeader(key, headers[key]);
+  }
+  if(req.method == "OPTIONS"){
+    res.writeHead(200, {'Content-Type': 'text/plain'});
+    res.end('ok');
+    return;
+  }
   // redirect users to /quote if they try to hit the homepage. This should already work, no changes needed
   if (req.url == '/') {
     console.log('redirecting');
@@ -37,13 +46,31 @@ const handleRequest = function(req, res) {
   }
 
   // TODO: GET ONE
-  if ((req.url == '/quote/' || req.url == '/quote') && req.method == "FILL ME IN") {
-    //YOUR CODE HERE
-
+  if ((req.url == '/quote/' || req.url == '/quote') && req.method == "GET") {
+    //generate random quote
+    let quoteIndex = getRandomInt(0, quotes.length);
+    let quote = quotes[quoteIndex];
+    //send back 200 success
+    res.writeHead(200, { 'Content-Type': 'text/plain' } )
+    //send data to client
+    res.end(quote);
   }
+
+
   // TODO: POST/CREATE
-  else if ((req.url == 'FILL ME IN' || req.url == 'FILL ME IN') && req.method == "FILL ME IN") {
-    //YOUR CODE HERE
+  else if ((req.url == '/quote/' || req.url == '/quote') && req.method == 'POST') {
+    let body = [];
+    req.on('data', (chunk) => {
+      body.push(chunk);
+    }).on('end', () => {
+      // at this point, `body` has the entire request body stored in it as a string
+      body = JSON.parse(Buffer.concat(body).toString()); //JSON object
+      let { quote } = body
+      //let quote = body.quote
+      quotes.push(quote)
+      res.end('data received');
+    });
+    
   }
 
 //CATCH ALL ROUTE
